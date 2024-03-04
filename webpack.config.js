@@ -1,5 +1,5 @@
 // Generated using webpack-cli https://github.com/webpack/webpack-cli
-
+/* eslint-disable */
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const autoprefixer = require('autoprefixer');

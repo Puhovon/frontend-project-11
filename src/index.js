@@ -1,5 +1,4 @@
-import app from './components/app.js';
-import './style.scss'
+import app from './components/app';
+import './style.scss';
 
 app();
-console.log("Hello World!");
