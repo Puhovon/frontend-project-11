@@ -1,12 +1,33 @@
 import 'bootstrap';
 import onChange from 'on-change';
 import * as yup from 'yup';
+import i18next from 'i18next';
+import { render, renderMessage } from './render';
+import formStates from '../abstractions/formStates';
+import elements from '../abstractions/elements';
 
-const formState = {
-  valid: 'valid',
-  invalid: 'invalid',
-  download: 'download',
-};
+i18next.init({
+  lng: 'ru',
+  debug: true,
+  resources: {
+    ru: {
+      translation: {
+        already_downloaded: 'RSS уже существует',
+        invalid_url: 'Ссылка должна быть валидным URL',
+        success: 'RSS успешно загружен',
+      },
+    },
+  },
+});
+
+yup.setLocale({
+  mixed: {
+    notOneOf: 'already_downloaded',
+  },
+  string: {
+    url: 'invalid_url',
+  },
+});
 
 const validate = (state, inputVal) => {
   const shema = yup.string().required().url().notOneOf(state.rssForm.urls);
@@ -18,40 +39,36 @@ export default () => {
     rssForm: {
       valid: 'filling',
       urls: [],
-      errors: [],
+      message: '',
     },
     rssResults: {
-      urls: [],
+      feeds: [],
     },
   };
 
-  const watchedState = onChange(state, (path, value) => {
+  const watchedState = onChange(state, (path) => {
     if (path === 'rssForm.valid') {
-      switch (value) {
-        case formState.valid:
-          console.log('valid');
-          break;
-        case formState.invalid:
-          console.log('invalid');
-          break;
-        default:
-          break;
-      }
+      render(state, elements);
+    }
+    if (path === 'rssForm.message') {
+      renderMessage(state, elements, i18next);
     }
   });
 
-  const form = document.querySelector('form');
-  const input = document.querySelector('#rss-url');
+  render(state, elements, i18next);
+
   const getUrl = async (e) => {
     e.preventDefault();
-    const url = input.value;
+    const url = elements.input.value;
     validate(state, url).then(() => {
       watchedState.rssForm.urls.push(url);
-      watchedState.rssForm.valid = formState.valid;
+      watchedState.rssForm.valid = formStates.state.valid;
+      watchedState.rssForm.message = formStates.message.success;
     })
-      .catch(() => {
-        watchedState.rssForm.urls.valid = formState.invalid;
+      .catch((err) => {
+        watchedState.rssForm.valid = formStates.state.invalid;
+        watchedState.rssForm.message = err.message;
       });
   };
-  form.addEventListener('submit', getUrl);
+  elements.form.addEventListener('submit', getUrl);
 };
