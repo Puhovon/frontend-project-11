@@ -6,4 +6,6 @@ export default {
   submitButton: document.querySelector('button[type="submit"]'),
   example: document.querySelector('#example'),
   feedBack: document.querySelector('.feedback'),
+  posts: document.querySelector('.posts'),
+  feeds: document.querySelector('.feeds'),
 };
