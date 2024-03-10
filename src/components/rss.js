@@ -10,23 +10,24 @@ const parseItem = (xml) => {
   return item;
 };
 
-const parseItems = (xml) => {
+export default (xml) => {
   const parser = new DOMParser();
   const chanel = parser.parseFromString(xml, 'text/xml');
-  return [...chanel.querySelectorAll('item')].map((el) => parseItem(el));
-};
 
-const parseFeeds = (xml) => {
-  const parser = new DOMParser();
-  const chanel = parser.parseFromString(xml, 'text/xml');
+  const parsererrors = chanel.querySelector('parsererror');
+  if (parsererrors !== null) {
+    const error = new Error();
+    error.name = 'parseError';
+    throw error;
+  }
+
   const feed = {
     title: chanel.querySelector('title').textContent,
     description: chanel.querySelector('description').textContent,
   };
-  return feed;
-};
+  const posts = [...chanel.querySelectorAll('item')].map((el) => parseItem(el));
 
-export default (xml) => ({
-  feed: parseFeeds(xml),
-  items: parseItems(xml),
-});
+  const data = { feed, posts };
+  console.log(data);
+  return data;
+};

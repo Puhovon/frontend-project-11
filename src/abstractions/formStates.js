@@ -8,5 +8,6 @@ export default {
     success: 'success',
     already_download: 'already_download',
     invalidUrl: 'in_valid',
+    RssNotValid: 'invalidRss',
   },
 };

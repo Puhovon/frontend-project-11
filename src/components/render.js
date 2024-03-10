@@ -1,7 +1,7 @@
 import formStates from '../abstractions/formStates';
 
 const render = (state, elements) => {
-  if (state.rssForm.valid === formStates.state.valid) {
+  if (state.rssForm.state === formStates.state.valid) {
     elements.input.classList.remove('is-invalid');
     elements.input.value = '';
     elements.input.focus();
@@ -12,17 +12,17 @@ const render = (state, elements) => {
 };
 
 const renderMessage = (state, elements, i18n) => {
-  console.log(state.rssForm.valid);
-  if (state.rssForm.valid === formStates.state.invalid) {
-    elements.feedBack.classList.remove('text-success');
-    elements.feedBack.classList.add('text-danger');
-  }
-  if (state.rssForm.valid === formStates.state.valid) {
+  if (state.rssForm.state === formStates.state.valid) {
+    console.log('valid');
     elements.feedBack.classList.remove('text-danger');
     elements.feedBack.classList.add('text-success');
   }
+  if (state.rssForm.state === formStates.state.invalid) {
+    console.log('invalid');
+    elements.feedBack.classList.remove('text-success');
+    elements.feedBack.classList.add('text-danger');
+  }
   elements.feedBack.textContent = i18n.t(state.rssForm.message);
-  console.log(state.rssForm.message);
 };
 
 const createList = () => {
@@ -49,6 +49,7 @@ const createPosts = (posts) => {
     button.classList = 'btn btn-outline-primary btn-sm';
     button.dataset.dataId = post.id;
     button.textContent = 'Посмотреть';
+
     li.append(a, button);
     ul.prepend(li);
   });

@@ -8,5 +8,6 @@ export default {
     goodFeedback: 'RSS успешно загружен',
     invalidFeedback: 'Ссылка должна быть валидным URL',
     oneOfFeedback: 'RSS уже существует',
+    invalidRss: 'URL не содержит RSS',
   },
 };

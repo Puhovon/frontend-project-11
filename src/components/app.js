@@ -17,6 +17,7 @@ i18next.init({
         already_downloaded: 'RSS уже существует',
         invalid_url: 'Ссылка должна быть валидным URL',
         success: 'RSS успешно загружен',
+        invalidRss: 'URL не содержит RSS',
       },
     },
   },
@@ -40,32 +41,34 @@ const addProxy = (url) => {
   const hexletAllorigins = new URL('/get', 'https://allorigins.hexlet.app/');
   hexletAllorigins.searchParams.append('disableCache', 'true');
   hexletAllorigins.searchParams.append('url', url);
-  console.log(hexletAllorigins.toString());
   return hexletAllorigins;
 };
 
 const getData = (watchedState) => {
   axios.get(addProxy(watchedState.rssForm.currentUrl)).then((r) => {
     if (r.status === 200) {
-      console.log(r.data.contents);
-      const { feed, items } = rss(r.data.contents);
+      const { feed, posts } = rss(r.data.contents);
       feed.id = uniqueId();
       watchedState.feeds.push(feed);
-      items.map((el) => {
+      posts.map((el) => {
         el.feedId = feed.id;
         el.id = uniqueId();
       });
-      watchedState.posts.push(...items);
-      console.log(watchedState);
+      watchedState.posts.push(...posts);
       renderRssData(watchedState, elements);
     }
-  }).catch(console.log);
+  }).catch((error) => {
+    if (error.name === 'parseError') {
+      watchedState.rssForm.state = formStates.state.invalid;
+      watchedState.rssForm.message = formStates.message.RssNotValid;
+    }
+  });
 };
 
 export default () => {
   const state = {
     rssForm: {
-      valid: 'filling',
+      state: 'filling',
       urls: [],
       currentUrl: '',
       message: '',
@@ -75,7 +78,7 @@ export default () => {
   };
 
   const watchedState = onChange(state, (path) => {
-    if (path === 'rssForm.valid') {
+    if (path === 'rssForm.state') {
       render(state, elements);
       getData(watchedState);
     }
@@ -92,11 +95,11 @@ export default () => {
     validate(state, url).then(() => {
       watchedState.rssForm.urls.push(url);
       watchedState.rssForm.currentUrl = url;
-      watchedState.rssForm.valid = formStates.state.valid;
+      watchedState.rssForm.state = formStates.state.valid;
       watchedState.rssForm.message = formStates.message.success;
     })
       .catch((err) => {
-        watchedState.rssForm.valid = formStates.state.invalid;
+        watchedState.rssForm.state = formStates.state.invalid;
         watchedState.rssForm.message = err.message;
       });
   };
