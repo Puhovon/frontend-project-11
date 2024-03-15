@@ -1,26 +1,31 @@
 import formStates from '../abstractions/formStates';
 
 const render = (state, elements) => {
+  if (state.rssForm.state === formStates.state.download) {
+    elements.submitButton.disabled = true;
+  }
   if (state.rssForm.state === formStates.state.valid) {
     elements.input.classList.remove('is-invalid');
     elements.input.value = '';
     elements.input.focus();
+    elements.submitButton.disabled = false;
   }
   if (state.rssForm.valid === formStates.state.invalid) {
     elements.input.classList.add('is-invalid');
+    elements.submitButton.disabled = false;
   }
 };
 
 const renderMessage = (state, elements, i18n) => {
   if (state.rssForm.state === formStates.state.valid) {
-    console.log('valid');
     elements.feedBack.classList.remove('text-danger');
     elements.feedBack.classList.add('text-success');
+    elements.submitButton.disabled = false;
   }
   if (state.rssForm.state === formStates.state.invalid) {
-    console.log('invalid');
     elements.feedBack.classList.remove('text-success');
     elements.feedBack.classList.add('text-danger');
+    elements.submitButton.disabled = false;
   }
   elements.feedBack.textContent = i18n.t(state.rssForm.message);
 };
@@ -40,14 +45,14 @@ const createPosts = (posts) => {
 
     li.classList = 'list-group-item d-flex justify-content-between align-items-start border-0 border-end-0';
     a.href = post.link;
-    a.dataset.dataId = post.id;
+    a.dataset.id = post.id;
     a.setAttribute('rel', 'noopener noreferrer');
     a.target = '_blank';
     a.classList = 'fw-bold';
     a.textContent = post.title;
 
     button.classList = 'btn btn-outline-primary btn-sm';
-    button.dataset.dataId = post.id;
+    button.dataset.id = post.id;
     button.textContent = 'Посмотреть';
 
     li.append(a, button);
@@ -68,7 +73,6 @@ const createCard = (title) => {
 
   body.append(h2);
   card.append(body);
-  console.log(card);
   return card;
 };
 
@@ -98,5 +102,6 @@ const renderRssData = (state, elements) => {
   const cardPosts = createCard('Посты');
   cardPosts.append(createPosts(state.posts));
   elements.posts.replaceChildren(cardPosts);
+  state.rssForm.state = formStates.state.valid;
 };
 export { render, renderMessage, renderRssData };

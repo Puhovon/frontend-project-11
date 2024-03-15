@@ -14,6 +14,7 @@ i18next.init({
   resources: {
     ru: {
       translation: {
+        dowload: 'RSS поток устанавливается',
         already_downloaded: 'RSS уже существует',
         invalid_url: 'Ссылка должна быть валидным URL',
         success: 'RSS успешно загружен',
@@ -32,9 +33,33 @@ yup.setLocale({
   },
 });
 
+const state = {
+  rssForm: {
+    state: 'filling',
+    urls: [],
+    currentUrl: '',
+    message: '',
+  },
+  posts: [],
+  feeds: [],
+};
+
 const validate = (state, inputVal) => {
   const shema = yup.string().required().url().notOneOf(state.rssForm.urls);
   return shema.validate(inputVal);
+};
+
+const getData = (url) => axios.get(addProxy(url));
+
+const handleData = (data, watchedState) => {
+  const { feed, posts } = data;
+  feed.id = uniqueId();
+  watchedState.feeds.push(feed);
+  posts.map((el) => {
+    el.feedId = feed.id;
+    el.id = uniqueId();
+  });
+  watchedState.posts.push(...posts);
 };
 
 const addProxy = (url) => {
@@ -44,43 +69,29 @@ const addProxy = (url) => {
   return hexletAllorigins;
 };
 
-const getData = (watchedState) => {
-  axios.get(addProxy(watchedState.rssForm.currentUrl)).then((r) => {
-    if (r.status === 200) {
-      const { feed, posts } = rss(r.data.contents);
-      feed.id = uniqueId();
-      watchedState.feeds.push(feed);
-      posts.map((el) => {
-        el.feedId = feed.id;
-        el.id = uniqueId();
-      });
-      watchedState.posts.push(...posts);
-      renderRssData(watchedState, elements);
-    }
-  }).catch((error) => {
-    if (error.name === 'parseError') {
-      watchedState.rssForm.state = formStates.state.invalid;
-      watchedState.rssForm.message = formStates.message.RssNotValid;
-    }
+const updatePosts = (watchedState) => {
+  const promise = watchedState.feeds.map((feed) => {
+    getData(feed.link).then((r) => {
+      if (r.status === 200) {
+        const { posts } = rss(r.data.contents, watchedState.rssForm.currentUrl);
+        console.log(posts);
+        const curentIdPosts = watchedState.posts.filter((post) => feed.id === post.feedId);
+        const postFromStateLinks = curentIdPosts.map(({ link }) => link);
+        const newPosts = posts.filter((post) => !postFromStateLinks.includes(post.link));
+        watchedState.posts.unshift(...newPosts);
+      }
+    });
   });
+  return Promise.all(promise).finally(() => setTimeout(updatePosts, 5000, watchedState));
 };
 
 export default () => {
-  const state = {
-    rssForm: {
-      state: 'filling',
-      urls: [],
-      currentUrl: '',
-      message: '',
-    },
-    posts: [],
-    feeds: [],
-  };
-
   const watchedState = onChange(state, (path) => {
+    if (path === 'posts') {
+      renderRssData(state, elements);
+    }
     if (path === 'rssForm.state') {
       render(state, elements);
-      getData(watchedState);
     }
     if (path === 'rssForm.message') {
       renderMessage(state, elements, i18next);
@@ -95,13 +106,24 @@ export default () => {
     validate(state, url).then(() => {
       watchedState.rssForm.urls.push(url);
       watchedState.rssForm.currentUrl = url;
-      watchedState.rssForm.state = formStates.state.valid;
-      watchedState.rssForm.message = formStates.message.success;
-    })
-      .catch((err) => {
-        watchedState.rssForm.state = formStates.state.invalid;
-        watchedState.rssForm.message = err.message;
+      watchedState.rssForm.state = formStates.state.download;
+      watchedState.rssForm.message = formStates.message.dowload;
+      getData(watchedState.rssForm.currentUrl).then((r) => {
+        const { feed, posts } = rss(r.data.contents, url);
+        handleData({ feed, posts }, watchedState);
+        watchedState.rssForm.state = formStates.state.valid;
+        watchedState.rssForm.message = formStates.message.success;
+      }).catch((error) => {
+        if (error.name === 'parseError') {
+          watchedState.rssForm.state = formStates.state.invalid;
+          watchedState.rssForm.message = formStates.message.RssNotValid;
+        }
       });
+    }).catch((err) => {
+      watchedState.rssForm.state = formStates.state.invalid;
+      watchedState.rssForm.message = err.message;
+    });
   };
   elements.form.addEventListener('submit', getUrl);
+  updatePosts(watchedState);
 };

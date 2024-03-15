@@ -10,7 +10,7 @@ const parseItem = (xml) => {
   return item;
 };
 
-export default (xml) => {
+export default (xml, url) => {
   const parser = new DOMParser();
   const chanel = parser.parseFromString(xml, 'text/xml');
 
@@ -24,10 +24,11 @@ export default (xml) => {
   const feed = {
     title: chanel.querySelector('title').textContent,
     description: chanel.querySelector('description').textContent,
+    link: url,
   };
   const posts = [...chanel.querySelectorAll('item')].map((el) => parseItem(el));
 
   const data = { feed, posts };
-  console.log(data);
+
   return data;
 };
