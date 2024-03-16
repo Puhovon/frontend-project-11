@@ -99,6 +99,7 @@ const createFeeds = (feeds) => {
 };
 
 const renderModal = (state, elements) => {
+  if(state.activePostId === null) return;
   const currentPost = state.posts.filter((el) => el.id === state.activePostId)[0];
 
   const { modalTitle } = elements;

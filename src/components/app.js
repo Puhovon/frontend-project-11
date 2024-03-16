@@ -40,13 +40,17 @@ const handleData = (data, watchedState) => {
   const { feed, posts } = data;
   feed.id = uniqueId();
   watchedState.feeds.push(feed);
+  setIds(feed, posts);
+  watchedState.posts.push(...posts);
+};
+
+const setIds = (feed, posts) => {
   posts.map((el) => {
     el.feedId = feed.id;
     el.id = uniqueId();
     return el;
   });
-  watchedState.posts.push(...posts);
-};
+}
 
 const updatePosts = (watchedState) => {
   // eslint-disable-next-line array-callback-return
@@ -57,6 +61,7 @@ const updatePosts = (watchedState) => {
         const curentIdPosts = watchedState.posts.filter((post) => feed.id === post.feedId);
         const postFromStateLinks = curentIdPosts.map(({ link }) => link);
         const newPosts = posts.filter((post) => !postFromStateLinks.includes(post.link));
+        setIds(feed, newPosts);
         watchedState.posts.unshift(...newPosts);
       }
     })
