@@ -7,7 +7,7 @@ const render = (state, { submitButton, input }) => {
   }
   if (state.rssForm.state === formStates.state.valid) {
     input.classList.remove('is-invalid');
-    input.value = '';
+    // input.value = '';
     input.focus();
     submitButton.disabled = false;
   }
