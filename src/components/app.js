@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import onChange from 'on-change';
 import * as yup from 'yup';
 import i18next from 'i18next';
@@ -42,11 +43,13 @@ const handleData = (data, watchedState) => {
   posts.map((el) => {
     el.feedId = feed.id;
     el.id = uniqueId();
+    return el;
   });
   watchedState.posts.push(...posts);
 };
 
 const updatePosts = (watchedState) => {
+  // eslint-disable-next-line array-callback-return
   const promise = watchedState.feeds.map((feed) => {
     getData(feed.link).then((r) => {
       if (r.status === 200) {
@@ -139,7 +142,6 @@ export default () => {
         watchedState.activePostId = null;
         return;
       }
-      console.log(id);
       watchedState.viewedPosts.push(id);
       watchedState.activePostId = id;
     };

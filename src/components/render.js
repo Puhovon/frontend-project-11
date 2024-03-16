@@ -1,18 +1,19 @@
+/* eslint-disable no-param-reassign */
 import formStates from '../abstractions/formStates';
 
-const render = (state, elements) => {
+const render = (state, { submitButton, input }) => {
   if (state.rssForm.state === formStates.state.download) {
-    elements.submitButton.disabled = true;
+    submitButton.disabled = true;
   }
   if (state.rssForm.state === formStates.state.valid) {
-    elements.input.classList.remove('is-invalid');
-    elements.input.value = '';
-    elements.input.focus();
-    elements.submitButton.disabled = false;
+    input.classList.remove('is-invalid');
+    input.value = '';
+    input.focus();
+    submitButton.disabled = false;
   }
   if (state.rssForm.state === formStates.state.invalid) {
-    elements.input.classList.add('is-invalid');
-    elements.submitButton.disabled = false;
+    input.classList.add('is-invalid');
+    submitButton.disabled = false;
   }
 };
 
@@ -38,7 +39,7 @@ const createList = () => {
 
 const createPosts = (state, i18n) => {
   const ul = createList();
-  state.posts.map((post) => {
+  state.posts.forEach((post) => {
     const li = document.createElement('li');
     const a = document.createElement('a');
     const button = document.createElement('button');
@@ -80,7 +81,7 @@ const createCard = (title) => {
 
 const createFeeds = (feeds) => {
   const ul = createList();
-  feeds.map((feed) => {
+  feeds.forEach((feed) => {
     const li = document.createElement('li');
     const h3 = document.createElement('h3');
     const p = document.createElement('p');
