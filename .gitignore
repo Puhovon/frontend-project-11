@@ -18,7 +18,6 @@
 .vscode
 .cache
 .eslintcache
-package-lock.json
 dist/
 # Ignore docs files
 /_site/
