@@ -9,5 +9,6 @@ export default {
     already_download: 'already_download',
     invalidUrl: 'in_valid',
     RssNotValid: 'invalidRss',
+    axiosError: 'axiosError',
   },
 };

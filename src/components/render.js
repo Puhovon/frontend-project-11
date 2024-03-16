@@ -10,7 +10,7 @@ const render = (state, elements) => {
     elements.input.focus();
     elements.submitButton.disabled = false;
   }
-  if (state.rssForm.valid === formStates.state.invalid) {
+  if (state.rssForm.state === formStates.state.invalid) {
     elements.input.classList.add('is-invalid');
     elements.submitButton.disabled = false;
   }
@@ -36,9 +36,9 @@ const createList = () => {
   return ul;
 };
 
-const createPosts = (posts) => {
+const createPosts = (state, i18n) => {
   const ul = createList();
-  posts.map((post) => {
+  state.posts.map((post) => {
     const li = document.createElement('li');
     const a = document.createElement('a');
     const button = document.createElement('button');
@@ -48,12 +48,14 @@ const createPosts = (posts) => {
     a.dataset.id = post.id;
     a.setAttribute('rel', 'noopener noreferrer');
     a.target = '_blank';
-    a.classList = 'fw-bold';
+    a.classList = state.viewedPosts.includes(post.id) ? 'fw-normal link-secondary' : 'fw-bold';
     a.textContent = post.title;
 
     button.classList = 'btn btn-outline-primary btn-sm';
     button.dataset.id = post.id;
-    button.textContent = 'Посмотреть';
+    button.dataset.bsTarget = '#modal';
+    button.dataset.bsToggle = 'modal';
+    button.textContent = i18n.t('uiElements.button');
 
     li.append(a, button);
     ul.prepend(li);
@@ -95,13 +97,41 @@ const createFeeds = (feeds) => {
   return ul;
 };
 
-const renderRssData = (state, elements) => {
-  const cardFeeds = createCard('Фиды');
+const renderModal = (state, elements) => {
+  const currentPost = state.posts.filter((el) => el.id === state.activePostId)[0];
+
+  const { modalTitle } = elements;
+  const { modalBody } = elements;
+  const { modalLink } = elements;
+
+  modalBody.textContent = currentPost.description;
+  modalTitle.textContent = currentPost.title;
+  modalLink.href = currentPost.link;
+
+  elements.modalWindow.classList.add('show');
+  elements.modalWindow.setAttribute('style', 'display: block;');
+
+  elements.modalWindow.removeAttribute('aria-hidden');
+  elements.modalWindow.setAttribute('aria-modal', true);
+
+  elements.body.classList.add('modal-open');
+  elements.body.setAttribute('style', 'overflow: hidden; padding-right: 15px;');
+  const post = elements.posts.querySelector(`a[data-id="${currentPost.id}"]`);
+  post.classList = 'fw-normal link-secondary';
+};
+
+const renderRssData = (state, elements, i18n) => {
+  elements.feeds.innerHTML = '';
+  elements.posts.innerHTML = '';
+  const cardFeeds = createCard(i18n.t('uiElements.feeds'));
   cardFeeds.append(createFeeds(state.feeds));
-  elements.feeds.replaceChildren(cardFeeds);
-  const cardPosts = createCard('Посты');
-  cardPosts.append(createPosts(state.posts));
-  elements.posts.replaceChildren(cardPosts);
+  elements.feeds.append(cardFeeds);
+  const cardPosts = createCard(i18n.t('uiElements.posts'));
+  const posts = createPosts(state, i18n);
+  cardPosts.append(posts);
+  elements.posts.append(cardPosts);
   state.rssForm.state = formStates.state.valid;
 };
-export { render, renderMessage, renderRssData };
+export {
+  render, renderMessage, renderRssData, renderModal,
+};

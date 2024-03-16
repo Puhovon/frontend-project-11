@@ -1,13 +1,16 @@
 export default {
   translation: {
-    title: 'RSS агрегатор',
-    description: 'Начните читать RSS сегодня! Это легко, это красиво.',
-    form: 'Ссылка RSS',
-    submitButton: 'Добавить',
-    example: 'Пример: https://lorem-rss.hexlet.app/feed',
-    goodFeedback: 'RSS успешно загружен',
-    invalidFeedback: 'Ссылка должна быть валидным URL',
-    oneOfFeedback: 'RSS уже существует',
-    invalidRss: 'URL не содержит RSS',
+    dowload: 'RSS поток устанавливается',
+    already_downloaded: 'RSS уже существует',
+    invalid_url: 'Ссылка должна быть валидным URL',
+    success: 'RSS успешно загружен',
+    invalidRss: 'Ресурс не содержит валидный RSS',
+    axiosError: 'Ошибка Сети',
+    require: 'Не должно быть пустым',
+    uiElements: {
+      button: 'Просмотр',
+      feeds: 'Фиды',
+      posts: 'Посты',
+    },
   },
 };
