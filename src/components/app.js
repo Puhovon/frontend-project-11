@@ -60,11 +60,14 @@ const updatePosts = (watchedState) => {
         watchedState.posts.unshift(...newPosts);
       }
     })
-      .catch(() => {
+      .catch((error) => {
+        if (error.name === 'parseError') {
+          watchedState.rssForm.message = formStates.message.RssNotValid;
+        }
         if (axios.isAxiosError) {
-          watchedState.rssForm.state = formStates.state.invalid;
           watchedState.rssForm.message = formStates.message.axiosError;
         }
+        watchedState.rssForm.state = formStates.state.invalid;
       });
   });
   return Promise.all(promise).finally(() => setTimeout(updatePosts, 5000, watchedState));
@@ -123,13 +126,12 @@ export default () => {
           render(state, elements);
         }).catch((error) => {
           if (error.name === 'parseError') {
-            watchedState.rssForm.state = formStates.state.invalid;
             watchedState.rssForm.message = formStates.message.RssNotValid;
           }
-          if (axios.isAxiosError) {
-            watchedState.rssForm.state = formStates.state.invalid;
+          if (error instanceof axios.AxiosError) {
             watchedState.rssForm.message = formStates.message.axiosError;
           }
+          watchedState.rssForm.state = formStates.state.invalid;
         });
       }).catch((err) => {
         watchedState.rssForm.state = formStates.state.invalid;
