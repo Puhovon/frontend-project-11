@@ -51,12 +51,14 @@ const createPosts = (state, i18n) => {
     a.target = '_blank';
     a.classList = state.viewedPosts.includes(post.id) ? 'fw-normal link-secondary' : 'fw-bold';
     a.textContent = post.title;
+    a.type = 'a';
 
     button.classList = 'btn btn-outline-primary btn-sm';
     button.dataset.id = post.id;
     button.dataset.bsTarget = '#modal';
     button.dataset.bsToggle = 'modal';
     button.textContent = i18n.t('uiElements.button');
+    button.type = 'button';
 
     li.append(a, button);
     ul.prepend(li);
@@ -98,8 +100,13 @@ const createFeeds = (feeds) => {
   return ul;
 };
 
+const viewedPosts = (id, elements) => {
+  const post = elements.posts.querySelector(`a[data-id="${id}"]`);
+  post.classList = 'fw-normal link-secondary';
+};
+
 const renderModal = (state, elements) => {
-  if(state.activePostId === null) return;
+  if (state.activePostId === null) return;
   const currentPost = state.posts.filter((el) => el.id === state.activePostId)[0];
 
   const { modalTitle } = elements;
@@ -118,8 +125,7 @@ const renderModal = (state, elements) => {
 
   elements.body.classList.add('modal-open');
   elements.body.setAttribute('style', 'overflow: hidden; padding-right: 15px;');
-  const post = elements.posts.querySelector(`a[data-id="${currentPost.id}"]`);
-  post.classList = 'fw-normal link-secondary';
+  viewedPosts(currentPost.id, elements);
 };
 
 const renderRssData = (state, elements, i18n) => {
@@ -135,5 +141,5 @@ const renderRssData = (state, elements, i18n) => {
   state.rssForm.state = formStates.state.valid;
 };
 export {
-  render, renderMessage, renderRssData, renderModal,
+  render, renderMessage, renderRssData, renderModal, viewedPosts,
 };

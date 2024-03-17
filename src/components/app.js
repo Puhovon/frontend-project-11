@@ -6,7 +6,7 @@ import axios from 'axios';
 import { uniqueId } from 'lodash';
 import ru from '../locales/ru';
 import {
-  render, renderMessage, renderModal, renderRssData,
+  render, renderMessage, renderModal, renderRssData, viewedPosts,
 } from './render';
 import formStates from '../abstractions/formStates';
 import elements from '../abstractions/elements';
@@ -36,6 +36,14 @@ const validate = (state, inputVal) => {
 
 const getData = (url) => axios.get(addProxy(url));
 
+const setIds = (feed, posts) => {
+  posts.map((el) => {
+    el.feedId = feed.id;
+    el.id = uniqueId();
+    return el;
+  });
+};
+
 const handleData = (data, watchedState) => {
   const { feed, posts } = data;
   feed.id = uniqueId();
@@ -43,14 +51,6 @@ const handleData = (data, watchedState) => {
   setIds(feed, posts);
   watchedState.posts.push(...posts);
 };
-
-const setIds = (feed, posts) => {
-  posts.map((el) => {
-    el.feedId = feed.id;
-    el.id = uniqueId();
-    return el;
-  });
-}
 
 const updatePosts = (watchedState) => {
   // eslint-disable-next-line array-callback-return
@@ -145,12 +145,19 @@ export default () => {
     };
     const buttonsHandler = (e) => {
       const { id } = e.target.dataset;
-      if (id === undefined) {
-        watchedState.activePostId = null;
+      if (e.target.type === 'a') {
+        watchedState.viewedPosts.push(id);
+        viewedPosts(id, elements);
         return;
       }
-      watchedState.viewedPosts.push(id);
-      watchedState.activePostId = id;
+      if (e.target.type === 'button') {
+        watchedState.viewedPosts.push(id);
+        watchedState.activePostId = id;
+        renderModal(state, elements);
+      }
+      if (id === undefined) {
+        watchedState.activePostId = null;
+      }
     };
     elements.posts.addEventListener('click', buttonsHandler);
     elements.form.addEventListener('submit', getUrl);
