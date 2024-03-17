@@ -161,7 +161,6 @@ export default () => {
     };
     elements.posts.addEventListener('click', buttonsHandler);
     elements.form.addEventListener('submit', getUrl);
-
     updatePosts(watchedState);
   });
 };

@@ -140,6 +140,11 @@ const renderRssData = (state, elements, i18n) => {
   elements.posts.append(cardPosts);
   state.rssForm.state = formStates.state.valid;
 };
+
+const closeModal = (state, elements) => {
+  
+}
+
 export {
-  render, renderMessage, renderRssData, renderModal, viewedPosts,
+  render, renderMessage, renderRssData, renderModal, viewedPosts, closeModal,
 };

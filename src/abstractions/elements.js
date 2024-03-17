@@ -14,4 +14,5 @@ export default {
   modalTitle: document.querySelector('.modal-title'),
   modalBody: document.querySelector('.modal-body'),
   modalLink: document.querySelector('a'),
+  modalClose: modal.querySelectorAll('button'),
 };
