@@ -4,7 +4,6 @@
   "description": "My webpack project",
   "main": "./src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build:dev": "webpack --mode=development",
     "build:prod": "webpack --mode=production --node-env=production",
     "watch": "webpack --watch",
@@ -24,6 +23,8 @@
   "homepage": "https://github.com/Puhovon/frontend-project-11#readme",
   "devDependencies": {
     "@babel/eslint-parser": "^7.19.1",
+    "@playwright/test": "^1.42.1",
+    "@types/node": "^20.11.28",
     "@webpack-cli/generators": "^3.0.7",
     "autoprefixer": "^10.4.18",
     "css-loader": "^6.10.0",

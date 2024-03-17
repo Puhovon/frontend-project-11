@@ -24,7 +24,7 @@ dist/
 # Hugo files
 /resources/
 /.hugo_build.lock
-
+/node_modules/
 # Numerous always-ignore extensions
 *.diff
 *.err
@@ -57,8 +57,3 @@ Thumbs.db
 # Komodo
 .komodotools
 *.komodoproject
-
-# Folders to ignore
-/dist-sass/
-/js/coverage/
-/node_modules/

@@ -117,14 +117,6 @@ const renderModal = (state, elements) => {
   modalTitle.textContent = currentPost.title;
   modalLink.href = currentPost.link;
 
-  elements.modalWindow.classList.add('show');
-  elements.modalWindow.setAttribute('style', 'display: block;');
-
-  elements.modalWindow.removeAttribute('aria-hidden');
-  elements.modalWindow.setAttribute('aria-modal', true);
-
-  elements.body.classList.add('modal-open');
-  elements.body.setAttribute('style', 'overflow: hidden; padding-right: 15px;');
   viewedPosts(currentPost.id, elements);
 };
 
@@ -141,10 +133,6 @@ const renderRssData = (state, elements, i18n) => {
   state.rssForm.state = formStates.state.valid;
 };
 
-const closeModal = (state, elements) => {
-  
-}
-
 export {
-  render, renderMessage, renderRssData, renderModal, viewedPosts, closeModal,
+  render, renderMessage, renderRssData, renderModal, viewedPosts,
 };
