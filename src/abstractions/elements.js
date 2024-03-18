@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 export default {
   body: document.body,
   title: document.querySelector('h1'),
